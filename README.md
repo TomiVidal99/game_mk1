@@ -1,22 +1,22 @@
-### ------ TÍTULO ------
+# NOMBRE DEL JUEGO
+> Toda la descripción (Este es un juego hecho en python, etc)
 
-
-## DESCRIPCIÓN
-# Este es un juego hecho en python
-
+## TABLA DE CONTENIDO
+* [Por hacer](#todo)
+* [Configuración](#setup)
+* [Contribudores](#contributors)
 
 ## TODAVÍA POR HACER
 
-git remote -v
-#[]
-[]
-[]
-[]
-[]
-[]
+- []
+- []
+- []
+- []
 
+## Configuración
+> Como configurar
 
-## CONTRIBUDORES
+## Contribudores
 
-# Vidal, Facundo
-# Vidal, Tomás
+#### Vidal, Facundo
+#### Vidal, Tomás
