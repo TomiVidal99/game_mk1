@@ -15,23 +15,32 @@ from pygame.locals import (
  
 pygame.init() # initialize pygame
  
-# ------------------------------- GLOBAL VARIABLES 
-WINDOWWIDTH = 480
-WINDOWHEIGHT = 600
+# GLOBAL VARIABLES 
+
 # colors
+LIGHT_BLUE = (29, 124, 145)
 BLACK = (0, 0, 0)
 WHITE = (255, 0, 0)
+RED = (226, 63, 27)
+ORANGE = (221, 121, 13)
+GREEN = (31, 224, 13)
  
 MOVEMENT_STEP = 20
 BAR_SIZE = 30
 
-# create display window
-DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
-# pygame.display.set_caption('The Lonely Shooter')
+WINDOWWIDTH = 480
+WINDOWHEIGHT = 600
+
+BACKGROUND_COLOR = LIGHT_BLUE
+WINDOW_TITLE = "GAME_MK1"
+
+# create display window and sets the title
+DISPLAY = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
+pygame.display.set_caption(WINDOW_TITLE)
 
 def main(): 
 
-	bar = Bar(WINDOWWIDTH/2 + BAR_SIZE, WINDOWHEIGHT * (6/7) , BAR_SIZE)
+	bar = Bar(WINDOWWIDTH/2 + BAR_SIZE, WINDOWHEIGHT * (6/7) , BAR_SIZE, RED)
 
 	# loop pricipal
 	while True:
@@ -50,24 +59,25 @@ def main():
 				# move bar to the right of the screen
 				if event.key == K_RIGHT:
 					# if the bar is not near the edge increment position
-					if (bar.pos_x < WINDOWWIDTH - bar.width):
-						bar.update_position(bar.pos_x + MOVEMENT_STEP)
+					if (bar.x < WINDOWWIDTH - bar.width):
+						bar.update_position(bar.x + MOVEMENT_STEP)
 
 				# move bar to the left of the screen
 				if event.key == K_LEFT:
 					# if the bar is not near the edge increment position
-					if (bar.pos_x > 0):
-						bar.update_position(bar.pos_x - MOVEMENT_STEP)
+					if (bar.x > 0):
+						bar.update_position(bar.x - MOVEMENT_STEP)
 
 				# when the user presses the key 'q' quits the game
 				if event.key == K_q:
 					pygame.quit()
 					sys.exit()
-				 
+
 
 		# draw/render 
-		DISPLAYSURF.fill(WHITE)
-		DISPLAYSURF.blit(bar.bar, (bar.pos_x, bar.pos_y))
+		DISPLAY.fill(BACKGROUND_COLOR)
+		bar.bar.fill(bar.color)
+		DISPLAY.blit(bar.bar, (bar.x, bar.y))
 
 		# done after drawing everything to the screen
 		pygame.display.flip()
