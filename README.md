@@ -8,9 +8,9 @@
 
 ## Todo
 
-- [] 	Better ball
-- []	Improve colors 
-- []	Improve overall performance
+- [ ] 	Better ball
+- [ ]	Improve colors 
+- [ ]	Improve overall performance
 
 ## Setup
 > You need to have install python Python 3.6.9 and pip3
