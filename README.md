@@ -1,22 +1,24 @@
-# NOMBRE DEL JUEGO
-> Toda la descripción (Este es un juego hecho en python, etc)
+# GAME_MK1
+> Game made with python, you have to destroy the blocks by bouncing off the ball against them while avoiding letting the ball go down below the bar.
 
-## TABLA DE CONTENIDO
-* [Por hacer](#todo)
-* [Configuración](#setup)
-* [Contribudores](#contributors)
+## Table of content
+* [Todo](#todo)
+* [Setup](#setup)
+* [Contributors](#contributors)
 
-## TODAVÍA POR HACER
+## Todo
 
-- []
-- []
-- []
-- []
+- [] 	Better ball
+- []	Improve colors 
+- []	Improve overall performance
 
-## Configuración
-> Como configurar
+## Setup
+> You need to have install python Python 3.6.9 and pip3
+> After install the modules: 
+> 	*pygame
+>	*numpy
+> And that's it, that's all you need, after you just need to download the code and run it! :)
 
-## Contribudores
-
-#### Vidal, Facundo
-#### Vidal, Tomás
+## Contributors
+* Vidal, Facundo
+* Vidal, Tomás
