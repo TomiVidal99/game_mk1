@@ -11,8 +11,8 @@ class Bar():
 		self.width = size*4
 		self.height = size
 		self.color = color
-		self.bar = pygame.Surface((self.width, self.height))
+		self.display = pygame.Surface((self.width, self.height))
 
 	def update_position(self, x):
-		if (x != 0):
+		if x != 0:
 			self.x = x
