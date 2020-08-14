@@ -14,7 +14,7 @@
 
 ## Setup
 > You need to have install python Python 3.6.9 and pip3
-> After install the modules: 'pygame', 'numpy'; and that's it, that's all you need, after you just need to download the code and run it! :)
+> After install the modules: 'pygame', and that's it, that's all you need, after you just need to download the code and run it! :)
 
 ## Contributors
 * Vidal, Facundo

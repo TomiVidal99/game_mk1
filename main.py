@@ -4,7 +4,6 @@ from pygame import *
 from bar import Bar
 from block import Block
 from ball import Ball
-import numpy as np
 
 from pygame.locals import (
     K_UP,
@@ -55,13 +54,6 @@ BLOCKS_MAX_HITS = 3
 
 
 # ------------------------
-
-# function to calculate distance between two points
-def distance(a_x, a_y, b_x, b_y):
-	vector_a = np.array([a_x, a_y])
-	vector_b = np.array([b_x, b_y])
-	return np.linalg.norm(vector_a-vector_b)
-
 
 # MAIN FUNCTION
 def main(): 
