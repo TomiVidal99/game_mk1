@@ -32,3 +32,7 @@ class Ball():
 
 	def update_velocity(self, new_velocity):
 		self.velocity = new_velocity 
+
+	def bounce(self):
+		self.direction_x = self.direction_x * (-1)
+		self.direction_y = self.direction_y * (-1)
