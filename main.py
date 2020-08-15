@@ -5,6 +5,8 @@ from bar import Bar
 from block import Block
 from ball import Ball
 import numpy as np
+import random
+from fontTools.ttLib import TTFont
 
 from pygame.locals import (
     K_UP,
@@ -20,17 +22,31 @@ pygame.init() # initialize pygame
  
 # GLOBAL VARIABLES ------------------------
 
+# fonts
+MAIN_FONT = 'always forever.ttf'
+
 # colors
 LIGHT_BLUE = (29, 124, 145)
 BLACK = (0, 0, 0)
-WHITE = (255, 0, 0)
-RED = (226, 63, 27)
+WHITE = (255, 255, 255)
+RED = (255, 0, 0)
 ORANGE = (221, 121, 13)
 GREEN = (31, 224, 13)
  
 # bar
 MOVEMENT_STEP = 20
-BAR_SIZE = 30
+BAR_WIDTH_EASY = 160
+BAR_WIDTH_MEDIUM = 100
+BAR_WIDTH_HARD = 60
+BAR_WIDTH = BAR_WIDTH_MEDIUM
+BAR_HEIGHT = 10
+
+#ball
+BALL_RADIUS = 5
+BALL_VELOCITY_EASY = 0.05
+BALL_VELOCITY_MEDIUM = 0.15
+BALL_VELOCITY_HARD = 0.25
+BALL_VELOCITY = BALL_VELOCITY_MEDIUM
 
 # screen
 WINDOWWIDTH = 480
@@ -53,39 +69,26 @@ BLOCKS_SECONDARY_COLOR = ORANGE
 BLOCKS_THIRD_COLOR = RED
 BLOCKS_MAX_HITS = 3
 
-
 # ------------------------
 
-# function to calculate distance between two points
-def distance(a_x, a_y, b_x, b_y):
-	vector_a = np.array([a_x, a_y])
-	vector_b = np.array([b_x, b_y])
-	return np.linalg.norm(vector_a-vector_b)
+def change_difficulty():
+	global BALL_VELOCITY, BAR_WIDTH
+	if BALL_VELOCITY == BALL_VELOCITY_EASY:
+		BALL_VELOCITY = BALL_VELOCITY_MEDIUM
+		BAR_WIDTH = BAR_WIDTH_MEDIUM
+	elif BALL_VELOCITY == BALL_VELOCITY_MEDIUM:
+		BALL_VELOCITY = BALL_VELOCITY_HARD
+		BAR_WIDTH = BAR_WIDTH_HARD
+	elif BALL_VELOCITY == BALL_VELOCITY_HARD:
+		BALL_VELOCITY = BALL_VELOCITY_EASY
+		BAR_WIDTH = BAR_WIDTH_EASY
+	ball.update_velocity(BALL_VELOCITY)
+	bar.update_width(BAR_WIDTH)
+	create_init_configuration()
 
-
-# MAIN FUNCTION
-def main(): 
-
-	# creates the bar object
-	bar = Bar(WINDOWWIDTH/2 - 2*BAR_SIZE, WINDOWHEIGHT * (6/7) , BAR_SIZE, RED)
-
-	# creates the ball object
-	ball = Ball(WINDOWWIDTH/2, WINDOWHEIGHT, 50, WHITE, 0.1, 0, -1)
-
-	#create all the blocks objects
-	blocks = []
-	print(BLOCKS_COLUMNS)
-	for i in range(BLOCKS_ROWS):
-		for j in range(BLOCKS_COLUMNS):
-			if j < BLOCKS_COLUMNS:
-				pos_x = j*BLOCKS_SIZE+(j+1)*BLOCKS_SEPARATION_X
-				pos_y = i*BLOCKS_SIZE+(i+1)*BLOCKS_SEPARATION_Y
-				blocks.insert(j*(i+1), Block(pos_x, pos_y, BLOCKS_SIZE, BLOCKS_INITIAL_COLOR, BLOCKS_MAX_HITS, 0))
-
-	# loop pricipal
-	while True:
-
-		# counts all the events that occured
+# when the user has pressed a key o click something
+def handle_user_events():
+	# counts all the events that occured
 		for event in pygame.event.get():
 
 			# when the user click the quit button, exits the game
@@ -108,11 +111,66 @@ def main():
 					if (bar.x > 0):
 						bar.update_position(bar.x - MOVEMENT_STEP)
 
+				# when the user presses the key 'r' restarts the game
+				if event.key == K_r:
+					print("Restarted")
+					create_init_configuration()
+
+				# when the user presses the key 'd' changes the game's difficulty
+				if event.key == K_d:
+					print("Difficulty changed")
+					change_difficulty()
+
 				# when the user presses the key 'q' quits the game
 				if event.key == K_q:
 					pygame.quit()
 					sys.exit()
 
+def text(surface, size, x, y, text, colour):
+    font = pygame.font.Font(MAIN_FONT, size)
+    text = font.render(text, 1, colour)
+    surface.blit(text, (x, y))
+
+def create_init_configuration():
+	# creates the bar object
+	global bar, ball, blocks
+
+	r1 = random.random()
+	r2 = random.random()
+	direction_x, direction_y = 0, 0
+	if r1 < 0.5:
+		direction_x = -1
+	else:
+		direction_x = 1
+	if r2 < 0.5:
+		direction_y = -1
+	else:
+		direction_y = 1
+
+	bar = Bar( ( (WINDOWWIDTH/2) - (BAR_WIDTH/2) ), ( WINDOWHEIGHT * (7/8) ) , BAR_WIDTH, BAR_HEIGHT, RED)
+	# creates the ball object
+	ball = Ball(WINDOWWIDTH/2 - 25, WINDOWHEIGHT/3, BALL_RADIUS, WHITE, BALL_VELOCITY, direction_x, direction_y)
+	#create all the blocks objects
+	blocks = []
+	for i in range(BLOCKS_ROWS):
+		for j in range(BLOCKS_COLUMNS):
+			if j < BLOCKS_COLUMNS:
+				pos_x = j*BLOCKS_SIZE+(j+1)*BLOCKS_SEPARATION_X
+				pos_y = i*BLOCKS_SIZE+(i+1)*BLOCKS_SEPARATION_Y
+				blocks.insert(j*(i+1), Block(pos_x, pos_y, BLOCKS_SIZE, BLOCKS_INITIAL_COLOR, BLOCKS_MAX_HITS, 0))
+
+# MAIN FUNCTION
+def main(): 
+
+	# creates the ball, bar and blocks, as global variables
+	create_init_configuration()
+	
+	# loop pricipal
+	while True:
+
+		# check user events
+		handle_user_events()
+		
 		# draw/render 
 		DISPLAY.fill(BACKGROUND_COLOR)
 
@@ -121,15 +179,19 @@ def main():
 		DISPLAY.blit(bar.display, (bar.x, bar.y))
 
 		# check collition of ball with the edges
-		vertical_distance_bar_ball = ( (bar.y - ball.y) ** 2 ) ** 0.5
-		if (ball.x + ball.size/2) >= WINDOWWIDTH:
+		vertical_distance_bar_ball = np.absolute((bar.y - ball.y))
+		if (ball.x + ball.radius) >= WINDOWWIDTH:
 			ball.update_direction(-1, 0)
-		if (ball.x - ball.size/2) <= 0:
+		if (ball.x) <= 2:
 			ball.update_direction(1, 0)
-		if (ball.y + ball.size/2) >= WINDOWHEIGHT or vertical_distance_bar_ball <= (ball.size/2 + bar.height/2):
-			ball.update_direction(0, -1)
-		if (ball.y - ball.size/2) <= 0:
+		if (ball.y) <= 2:
 			ball.update_direction(0, 1)
+		if vertical_distance_bar_ball <= ball.radius and (ball.x - ball.radius + 5) >= bar.x and (ball.x + ball.radius - 5) <= (bar.x + bar.width):
+			ball.update_direction(0, -1)
+		if (ball.y) >= (WINDOWHEIGHT - ball.radius): # HITS THE FLOOR
+			ball.velocity = 0
+			text(DISPLAY, 80, WINDOWWIDTH/3 - 80, WINDOWHEIGHT/2 - 80, 'You have LOST!', RED)
+			text(DISPLAY, 30, WINDOWWIDTH/3 - 30, WINDOWHEIGHT/2 + 50, 'Press [R] to restart or [Q] to quit', BLACK)
 
 		# draw ball
 		pos_x = ball.x + (ball.direction_x * ball.velocity)
@@ -138,18 +200,22 @@ def main():
 		ball.display.fill(ball.color)
 		DISPLAY.blit(ball.display, (ball.x, ball.y))
 
-		print("ball pos: ", ball.x, ball.y, ball.velocity)
+		#ball.velocity += 0.000005
 
-		#draw all the blocks objects
-		for block in blocks:
-			horizontal_distance = ( (ball.x - block.x  ) ** 2 ) ** 0.5
-			if horizontal_distance > (ball.size/2 + block.height/2):	
-				#block.display.fill(block.color)
+		#print("ball pos: ", ball.x, ball.y, ball.velocity)
+
+		# draw all the blocks objects
+		if ball.velocity != 0:
+			for block in blocks:
 				DISPLAY.blit(block.display, (block.x, block.y))
-			else:
-				print(horizontal_distance)
-				print("should be removed")
-				# blocks.remove(blocks)
+				# horizontal_distance = ( (ball.x - block.x  ) ** 2 ) ** 0.5
+				# if horizontal_distance > (ball.radius + block.height/2):	
+				# 	block.display.fill(block.color)
+				# 	DISPLAY.blit(block.display, (block.x, block.y))
+				# else:
+				# 	print(horizontal_distance)
+				# 	print("should be removed")
+				# 	blocks.remove(blocks)
 
 		# done after drawing everything to the screen
 		pygame.display.flip()
